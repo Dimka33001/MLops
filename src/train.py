@@ -16,11 +16,15 @@ def train_model():
 
     # Читаем подготовленные данные
     df = pd.read_csv(os.path.join(BASE_DIR, "..", "data", "iris.csv"))
+
     X = df.drop("target", axis=1)
     y = df["target"]
 
     X_train, X_test, y_train, y_test = train_test_split(
-        X, y, test_size=0.2, random_state=42
+        X,
+        y,
+        test_size=0.2,
+        random_state=42,
     )
 
     model = RandomForestClassifier(
@@ -28,6 +32,7 @@ def train_model():
         max_depth=params["max_depth"],
         random_state=42,
     )
+
     model.fit(X_train, y_train)
 
     predictions = model.predict(X_test)
@@ -35,11 +40,16 @@ def train_model():
 
     # Сохраняем метрики
     metrics_path = os.path.join(BASE_DIR, "..", "metrics.json")
+
     with open(metrics_path, "w") as f:
         json.dump({"accuracy": acc}, f)
 
     # Сохраняем модель
-    joblib.dump(model, os.path.join(BASE_DIR, "..", "models", "model.pkl"))
+    joblib.dump(
+        model,
+        os.path.join(BASE_DIR, "..", "models", "model.pkl"),
+    )
+
     print(f"Модель обучена. Accuracy: {acc}")
 
 
