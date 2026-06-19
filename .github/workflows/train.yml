@@ -2,7 +2,7 @@ name: Train and Report (CML)
 
 on:
   pull_request:
-    branches: [ "main" ]
+    branches: ["main"]
 
 permissions:
   pull-requests: write
@@ -22,13 +22,15 @@ jobs:
           python-version: '3.11'
           cache: 'pip'
 
-      - name: Установка зависимостей для сборки графиков (Canvas)
+      # Установка системных библиотек для отрисовки графиков (Canvas)
+      - name: Install system dependencies for CML
         run: |
-            sudo apt-get update
-            sudo apt-get install -y build-essential pkg-config libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev libpixman-1-dev
+          sudo apt-get update
+          sudo apt-get install -y build-essential pkg-config libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev libpixman-1-dev
 
+      # Рекомендую использовать v3 вместо v2 для поддержки новых версий Node.js
       - name: Setup CML
-        uses: iterative/setup-cml@v2
+        uses: iterative/setup-cml@v3
 
       - name: Установка зависимостей
         run: pip install -r requirements.txt
@@ -47,8 +49,10 @@ jobs:
           REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           echo "## Результаты эксперимента" > report.md
+          
           echo "### Изменения параметров:" >> report.md
           dvc params diff main --md >> report.md
+          
           echo "### Изменения метрик:" >> report.md
           dvc metrics diff main --md >> report.md
           
